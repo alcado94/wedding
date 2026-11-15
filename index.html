@@ -5,46 +5,46 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Nuestra boda</title>
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       min-height: 100vh;
       margin: 0;
       display: grid;
       place-items: center;
-      padding: 1.5rem;
-      box-sizing: border-box;
+      padding: 1rem;
       background: #f8f3ef;
-      color: #493b36;
-      font-family: Georgia, "Times New Roman", serif;
-      text-align: center;
     }
 
     main {
-      max-width: 38rem;
-      padding: 3rem 2rem;
-      background: #fff;
-      border: 1px solid #eadfd8;
-      border-radius: 1rem;
-      box-shadow: 0 1rem 3rem rgb(73 59 54 / 8%);
+      width: min(100%, 34rem);
     }
 
-    h1 {
-      margin: 0 0 1rem;
-      color: #8a5d50;
-      font-size: clamp(2.5rem, 8vw, 4rem);
-      font-weight: normal;
-    }
-
-    p {
-      font-size: 1.15rem;
-      line-height: 1.7;
+    .invitation-artwork {
+      display: block;
+      width: 100%;
+      height: auto;
     }
   </style>
 </head>
 <body>
   <main>
-    <h1>¡Nos casamos!</h1>
-    <p>Estamos muy felices de compartir este día tan especial contigo.</p>
-    <p>Próximamente encontrarás aquí todos los detalles de nuestra boda.</p>
+    <svg class="invitation-artwork" viewBox="0 0 1080 1498" role="img" aria-labelledby="artwork-title artwork-description" xmlns="http://www.w3.org/2000/svg">
+      <title id="artwork-title">Monograma de nuestra boda</title>
+      <desc id="artwork-description">Diseño vertical color granate con un marco doble blanco y un monograma caligráfico en el centro.</desc>
+      <rect width="1080" height="1498" fill="#650019" />
+      <g fill="none" stroke="#fffaf7" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="50" y="44" width="982" height="1374" rx="52" stroke-width="4" />
+        <rect x="65" y="61" width="952" height="1341" rx="39" stroke-width="3" />
+      </g>
+      <g fill="none" stroke="#fffaf7" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M291 711 C246 718 218 757 231 779 C250 812 304 795 354 775 C424 746 508 698 592 690" stroke-width="7" />
+        <path d="M261 945 C312 977 390 812 443 687 C467 631 501 580 520 575 C541 570 527 636 511 714 C495 794 493 851 519 865 C548 881 582 807 615 744 C646 685 679 609 697 585 C711 566 711 609 709 682 C705 777 702 852 737 900 C761 934 799 937 822 905 C854 862 861 803 842 754 C820 699 772 696 716 703 C659 710 608 736 562 762" stroke-width="10" />
+        <path d="M679 558 C705 549 730 526 747 510 C754 503 746 501 738 505 C723 514 705 543 679 558Z" fill="#fffaf7" stroke-width="3" />
+      </g>
+    </svg>
   </main>
 </body>
 </html>
