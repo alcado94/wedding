@@ -1,0 +1,25 @@
+---
+import { NAME_MAX_LENGTH, DIETARY_MAX_LENGTH } from '../lib/rsvp';
+import '../styles/rsvp-fields.css';
+interface Props { prefix: string; detailsOnly?: boolean }
+const { prefix, detailsOnly = false } = Astro.props;
+---
+{!detailsOnly && <div class="field">
+  <label for={`${prefix}-name`}>Nombre completo <span class="required-note">(obligatorio)</span></label>
+  <input id={`${prefix}-name`} name={`${prefix}-name`} type="text" autocomplete={prefix === 'primary' ? 'name' : 'off'} required maxlength={NAME_MAX_LENGTH} data-full-name aria-describedby={`${prefix}-name-error`} />
+  <p id={`${prefix}-name-error`} class="field-error" data-error hidden></p>
+</div>}
+<div class="field">
+  <label for={`${prefix}-dietary`}>Intolerancias o menú especial <span class="required-note">(opcional)</span></label>
+  <p class="hint" id={`${prefix}-dietary-hint`}>Por ejemplo: sin gluten, alergia a frutos secos o menú vegetariano.</p>
+  <textarea id={`${prefix}-dietary`} name={`${prefix}-dietary`} rows="3" maxlength={DIETARY_MAX_LENGTH} aria-describedby={`${prefix}-dietary-hint ${prefix}-dietary-error`}></textarea>
+  <p id={`${prefix}-dietary-error`} class="field-error" data-error hidden></p>
+</div>
+<fieldset class="choice-field" data-choice>
+  <legend>¿Necesitas utilizar el bus? <span class="required-note">(obligatorio)</span></legend>
+  <div class="choices">
+    <label><input type="radio" name={`${prefix}-bus`} value="yes" required aria-describedby={`${prefix}-bus-error`} /> Sí</label>
+    <label><input type="radio" name={`${prefix}-bus`} value="no" required aria-describedby={`${prefix}-bus-error`} /> No</label>
+  </div>
+  <p id={`${prefix}-bus-error`} class="field-error" data-error hidden></p>
+</fieldset>

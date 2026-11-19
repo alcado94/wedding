@@ -4,6 +4,8 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "test": "node --experimental-strip-types --test src/lib/rsvp.test.ts",
+    "test:e2e": "npm run build && playwright test",
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
@@ -11,5 +13,8 @@
   },
   "dependencies": {
     "astro": "^7.4.13"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.65.1"
   }
 }

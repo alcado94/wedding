@@ -1,68 +1,34 @@
+---
+import '../styles/global.css';
+import InvitationArtwork from '../components/InvitationArtwork.astro';
+import RsvpForm from '../components/RsvpForm.astro';
+---
 <!DOCTYPE html>
 <html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#5c0016">
-  <title>A&A</title>
-  <style is:global>
-    :root {
-      color-scheme: dark;
-      background: #5c0016;
-    }
-
-    * {
-      box-sizing: border-box;
-    }
-
-    html,
-    body {
-      width: 100%;
-      min-height: 100%;
-      margin: 0;
-    }
-
-    body {
-      min-height: 100vh;
-      min-height: 100dvh;
-      background: radial-gradient(ellipse at 50% 42%, #710d27 0%, #5c0016 55%, #420010 100%);
-    }
-
-    main {
-      display: grid;
-      min-height: 100vh;
-      min-height: 100dvh;
-      place-items: center;
-      padding: 24px;
-      padding: max(24px, env(safe-area-inset-top)) max(24px, env(safe-area-inset-right)) max(24px, env(safe-area-inset-bottom)) max(24px, env(safe-area-inset-left));
-    }
-
-    .invitation-artwork {
-      display: block;
-      width: min(100%, 640px);
-      height: auto;
-      max-height: calc(100svh - 48px);
-      overflow: visible;
-      color: #fff4e8;
-      filter: drop-shadow(0 12px 32px rgb(28 0 7 / 18%));
-    }
-  </style>
-</head>
-<body>
-  <main>
-    <svg class="invitation-artwork" viewBox="0 0 1080 1498" role="img" aria-labelledby="artwork-title artwork-description" xmlns="http://www.w3.org/2000/svg">
-      <title id="artwork-title">A&A</title>
-      <desc id="artwork-description">Diseño vertical color granate con un marco doble blanco y un monograma caligráfico en el centro.</desc>
-      <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
-        <rect x="50" y="50" width="980" height="1398" rx="52" stroke-width="3" opacity="0.9" />
-        <rect x="66" y="66" width="948" height="1366" rx="38" stroke-width="1.5" opacity="0.65" />
-      </g>
-      <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" transform="translate(-5 5)">
-        <path d="M291 711 C246 718 218 757 231 779 C250 812 304 795 354 775 C424 746 508 698 592 690" stroke-width="7" />
-        <path d="M261 945 C312 977 390 812 443 687 C467 631 501 580 520 575 C541 570 527 636 511 714 C495 794 493 851 519 865 C548 881 582 807 615 744 C646 685 679 609 697 585 C711 566 711 609 709 682 C705 777 702 852 737 900 C761 934 799 937 822 905 C854 862 861 803 842 754 C820 699 772 696 716 703 C659 710 608 736 562 762" stroke-width="10" />
-        <path d="M679 558 C705 549 730 526 747 510 C754 503 746 501 738 505 C723 514 705 543 679 558Z" fill="currentColor" stroke-width="3" />
-      </g>
-    </svg>
-  </main>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#5c0016" />
+    <meta name="description" content="A&A. Confirma tu asistencia y cuéntanos con quién compartirás este día." />
+    <title>A&A · Confirma tu asistencia</title>
+  </head>
+  <body>
+    <main>
+      <div class="invitation">
+        <InvitationArtwork />
+        <a class="invitation-link" href="#rsvp">Confirma tu asistencia <span aria-hidden="true">↓</span></a>
+      </div>
+      <RsvpForm />
+    </main>
+  </body>
 </html>
+
+<style>
+  main { padding: 24px; padding: max(24px, env(safe-area-inset-top)) max(24px, env(safe-area-inset-right)) max(24px, env(safe-area-inset-bottom)) max(24px, env(safe-area-inset-left)); }
+  .invitation { min-height: calc(100svh - 48px); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px; padding-bottom: 24px; }
+  .invitation-link { color: var(--ivory); text-decoration: underline; text-underline-offset: 6px; padding: 10px; text-align: center; font-family: Georgia, 'Times New Roman', serif; font-size: 1.1rem; }
+  .invitation-link span { display: inline-block; margin-left: 10px; }
+  @media (max-width: 480px) {
+    main { padding-left: max(12px, env(safe-area-inset-left)); padding-right: max(12px, env(safe-area-inset-right)); }
+  }
+</style>

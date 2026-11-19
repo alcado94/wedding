@@ -1,0 +1,111 @@
+---
+import GuestFields from './GuestFields.astro';
+import { NAME_MAX_LENGTH, MAX_COMPANIONS } from '../lib/rsvp';
+---
+<section id="rsvp" class="rsvp-section" aria-labelledby="rsvp-title">
+  <div class="rsvp-frame">
+    <header class="section-heading">
+      <p class="eyebrow">Nos encantará compartirlo contigo</p>
+      <h1 id="rsvp-title">Confirma tu asistencia</h1>
+      <p>Cuéntanos si vendrás y ayúdanos a preparar cada detalle.</p>
+    </header>
+    <p class="demo-note">Vista de prueba: las respuestas todavía no se envían ni se guardan.</p>
+    <noscript><p>Activa JavaScript para completar el formulario y añadir acompañantes.</p></noscript>
+    <form data-rsvp-form>
+      <fieldset class="guest-card">
+        <legend>Tus datos</legend>
+        <div class="field">
+          <label for="primary-name">Nombre completo <span class="required-note">(obligatorio)</span></label>
+          <input id="primary-name" name="primary-name" autocomplete="name" type="text" maxlength={NAME_MAX_LENGTH} required data-full-name aria-describedby="primary-name-error" />
+          <p id="primary-name-error" class="field-error" data-error hidden></p>
+        </div>
+        <fieldset class="choice-field" data-choice>
+          <legend>¿Podrás acompañarnos? <span class="required-note">(obligatorio)</span></legend>
+          <div class="choices">
+            <label><input type="radio" name="attendance" value="yes" required aria-describedby="attendance-error" /> Sí, asistiré</label>
+            <label><input type="radio" name="attendance" value="no" required aria-describedby="attendance-error" /> No podré asistir</label>
+          </div>
+          <p id="attendance-error" class="field-error" data-error hidden></p>
+        </fieldset>
+        <fieldset class="conditional-fields" data-attending hidden disabled>
+          <legend class="sr-only">Detalles de tu asistencia</legend>
+          <GuestFields prefix="primary" detailsOnly />
+          <fieldset class="choice-field" data-choice>
+            <legend>¿Vienes acompañado/a? <span class="required-note">(obligatorio)</span></legend>
+            <div class="choices">
+              <label><input type="radio" name="accompanied" value="yes" required aria-describedby="accompanied-error" /> Sí</label>
+              <label><input type="radio" name="accompanied" value="no" required aria-describedby="accompanied-error" /> No</label>
+            </div>
+            <p id="accompanied-error" class="field-error" data-error hidden></p>
+          </fieldset>
+        </fieldset>
+      </fieldset>
+      <fieldset class="conditional-fields" data-companions-section hidden disabled>
+        <legend class="companions-title">Tu compañía</legend>
+        <p class="hint">Añade hasta {MAX_COMPANIONS} acompañantes. Incluye los datos de cada persona que vendrá contigo.</p>
+        <div data-companions></div>
+        <div class="companion-actions">
+          <button type="button" class="button button-secondary" data-add>+ Añadir acompañante</button>
+          <p class="hint" data-counter>0 de {MAX_COMPANIONS} acompañantes</p>
+        </div>
+      </fieldset>
+      <p class="field-error" data-form-error role="alert" hidden></p>
+      <button type="submit" class="button button-primary" data-review disabled>Revisar respuesta</button>
+      <p class="hint review-hint">Podrás revisar todos los datos antes de terminar esta prueba.</p>
+    </form>
+    <section data-summary hidden aria-labelledby="summary-title" tabindex="-1">
+      <h2 id="summary-title">Tu respuesta, de un vistazo</h2>
+      <p data-summary-intro></p>
+      <div data-summary-guests></div>
+      <p class="demo-note">Esta es una vista previa. Tu respuesta no se ha enviado ni guardado.</p>
+      <button type="button" class="button button-primary" data-edit>Volver a editar</button>
+    </section>
+    <p class="sr-only" aria-live="polite" aria-atomic="true" data-announcement></p>
+    <template data-companion-template>
+      <fieldset class="guest-card" data-guest>
+        <legend data-guest-title>Acompañante</legend>
+        <GuestFields prefix="companion-template" />
+        <button type="button" class="remove-button" data-remove>Eliminar acompañante</button>
+      </fieldset>
+    </template>
+  </div>
+</section>
+
+<script src="../scripts/rsvp.ts"></script>
+
+<style>
+  .rsvp-section { width: min(100%, 760px); margin: 0 auto; padding: 32px 0 64px; scroll-margin-top: 24px; }
+  .rsvp-frame { border: 1px solid var(--border); border-radius: 30px; padding: clamp(24px, 6vw, 56px); position: relative; }
+  .rsvp-frame::before { content: ''; position: absolute; inset: 7px; border: 1px solid rgb(255 244 232 / 25%); border-radius: 24px; pointer-events: none; }
+  .section-heading { text-align: center; margin-bottom: 28px; }
+  .eyebrow { font-size: .75rem; letter-spacing: .14em; text-transform: uppercase; }
+  h1, h2, .guest-card > legend, .companions-title { font-family: Georgia, 'Times New Roman', serif; font-weight: 400; }
+  h1 { font-size: clamp(2rem, 6vw, 3rem); line-height: 1.12; margin: 16px 0; text-wrap: balance; }
+  h2 { font-size: 1.8rem; }
+  .section-heading > p:last-child { color: var(--muted); }
+  .demo-note { padding: 14px 16px; border-left: 2px solid var(--border); background: rgb(255 244 232 / 5%); font-size: .875rem; line-height: 1.6; margin: 24px 0; }
+  .guest-card { border: 1px solid rgb(255 244 232 / 25%); border-radius: 16px; padding: 20px; margin: 24px 0; }
+  .guest-card > legend, .companions-title { font-size: 1.4rem; padding: 0 8px; }
+  .conditional-fields { border: 0; padding: 0; margin: 0; }
+  .guest-card > :last-child { margin-bottom: 0; }
+  .button { display: inline-flex; align-items: center; justify-content: center; min-height: 48px; padding: 12px 22px; border: 1px solid var(--ivory); border-radius: 999px; font: inherit; cursor: pointer; text-decoration: none; }
+  .button-primary { background: var(--ivory); color: #5c0016; }
+  .button-secondary { background: transparent; color: var(--ivory); }
+  .button:hover:not(:disabled) { box-shadow: 0 0 0 3px rgb(255 244 232 / 15%); }
+  .button:disabled { opacity: .5; cursor: not-allowed; }
+  .companion-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; margin: 24px 0 32px; }
+  .companion-actions p { margin: 0; }
+  .remove-button, .rsvp-section :global(.summary-edit) { background: none; border: 0; color: var(--ivory); font: inherit; font-size: .875rem; text-decoration: underline; text-underline-offset: 4px; min-height: 44px; padding: 8px 0; cursor: pointer; }
+  .review-hint { margin-top: 12px; }
+  [data-summary] { scroll-margin-top: 32px; overflow-wrap: anywhere; }
+  [data-summary]:focus { outline: none; }
+  /* Summary articles are created in the browser, outside Astro's CSS scope. */
+  [data-summary] :global(.summary-guest) { border-bottom: 1px solid rgb(255 244 232 / 25%); padding: 12px 0; }
+  [data-summary] :global(.summary-guest h3) { font-size: 1rem; }
+  [data-summary] :global(.summary-guest p) { white-space: pre-wrap; line-height: 1.6; }
+  @media (max-width: 480px) {
+    .guest-card { border: 0; border-top: 1px solid rgb(255 244 232 / 25%); border-radius: 0; padding: 16px 0; }
+    .rsvp-frame { padding: 28px 16px; }
+    .button { width: 100%; }
+  }
+</style>
