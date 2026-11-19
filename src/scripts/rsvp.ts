@@ -1,4 +1,5 @@
 import { buildResponse, MAX_COMPANIONS, type Guest, type RsvpResponse } from '../lib/rsvp';
+import { submitResponse, type Submission } from '../lib/rsvp-submit';
 
 const form = document.querySelector<HTMLFormElement>('[data-rsvp-form]');
 
@@ -13,7 +14,10 @@ if (form) {
   const announcement = section.querySelector<HTMLElement>('[data-announcement]')!;
   const formError = form.querySelector<HTMLElement>('[data-form-error]')!;
   const summary = section.querySelector<HTMLElement>('[data-summary]')!;
-  const reviewButton = form.querySelector<HTMLButtonElement>('[data-review]')!;
+  const submitButton = form.querySelector<HTMLButtonElement>('[data-submit]')!;
+  let pending: Submission | undefined;
+  let sending = false;
+  let submitted = false;
   let nextId = 0;
 
   const cards = () => [...companions.querySelectorAll<HTMLFieldSetElement>('[data-guest]')];
@@ -122,7 +126,7 @@ if (form) {
     announce(`Acompañante eliminado. ${cards().length} de ${MAX_COMPANIONS}.`);
   });
 
-  function renderGuest(guest: Guest, title: string, prefix: string) {
+  function renderGuest(guest: Guest, title: string) {
     const article = document.createElement('article');
     article.className = 'summary-guest';
     const heading = document.createElement('h3');
@@ -131,13 +135,7 @@ if (form) {
     dietary.textContent = `Intolerancias o menú especial: ${guest.dietary || 'Sin indicaciones'}`;
     const bus = document.createElement('p');
     bus.textContent = `Bus: ${guest.needsBus ? 'Sí' : 'No'}`;
-    const editButton = document.createElement('button');
-    editButton.type = 'button';
-    editButton.className = 'summary-edit';
-    editButton.dataset.editPerson = `${prefix}-name`;
-    editButton.textContent = 'Editar datos';
-    editButton.setAttribute('aria-label', `Editar datos de ${guest.fullName} (${title})`);
-    article.append(heading, dietary, bus, editButton);
+    article.append(heading, dietary, bus);
     return article;
   }
 
@@ -147,11 +145,10 @@ if (form) {
     guestList.replaceChildren();
     if (response.attending) {
       const total = response.companions.length + 1;
-      intro.textContent = `Asistencia confirmada para esta vista previa: ${total} ${total === 1 ? 'persona' : 'personas'}.`;
-      guestList.append(renderGuest(response.guest, 'Tus datos', 'primary'));
-      const companionCards = cards();
+      intro.textContent = `Asistencia confirmada: ${total} ${total === 1 ? 'persona' : 'personas'}.`;
+      guestList.append(renderGuest(response.guest, 'Tus datos'));
       response.companions.forEach((guest, index) => {
-        guestList.append(renderGuest(guest, `Acompañante ${index + 1}`, companionCards[index].dataset.guest!));
+        guestList.append(renderGuest(guest, `Acompañante ${index + 1}`));
       });
     } else {
       intro.textContent = `${response.fullName}, has indicado que no podrás asistir. Gracias por avisarnos.`;
@@ -161,41 +158,59 @@ if (form) {
     summary.focus();
   }
 
-  form.addEventListener('submit', (event) => {
+  form.addEventListener('submit', async (event) => {
     event.preventDefault();
+    if (sending || submitted) return;
     formError.hidden = true;
-    const controls = [...form.querySelectorAll<Control>('input, textarea')].filter((control) => !control.matches(':disabled'));
-    const invalid = controls.filter((control) => !validate(control, true));
-    if (invalid.length) {
-      formError.textContent = 'Revisa los campos indicados antes de continuar.';
-      formError.hidden = false;
-      invalid[0].focus();
-      return;
+    if (!pending) {
+      const controls = [...form.querySelectorAll<Control>('input, textarea')].filter((control) => !control.matches(':disabled'));
+      const invalid = controls.filter((control) => !validate(control, true));
+      if (invalid.length) {
+        formError.textContent = 'Revisa los campos indicados antes de continuar.';
+        formError.hidden = false;
+        invalid[0].focus();
+        return;
+      }
+      try {
+        pending = {
+          submissionId: crypto.randomUUID(),
+          response: buildResponse(new FormData(form), cards().map((card) => card.dataset.guest!)),
+        };
+      } catch (error) {
+        formError.textContent = error instanceof Error ? error.message : 'No se ha podido preparar el envío. Revisa los datos.';
+        formError.hidden = false;
+        return;
+      }
     }
+    // Freeze this snapshot: a lost confirmation may still mean it was saved.
+    // Retries must use exactly the same UUID and values to avoid duplicates.
+    form.querySelectorAll<HTMLInputElement | HTMLTextAreaElement | HTMLButtonElement>('input, textarea, button').forEach((control) => {
+      control.disabled = true;
+    });
+    sending = true;
+    form.setAttribute('aria-busy', 'true');
+    submitButton.textContent = 'Enviando…';
+    announce('Estamos guardando tu respuesta.');
     try {
-      showSummary(buildResponse(new FormData(form), cards().map((card) => card.dataset.guest!)));
-    } catch (error) {
-      formError.textContent = error instanceof Error ? error.message : 'No se ha podido preparar el resumen. Revisa los datos.';
+      await submitResponse(pending);
+      submitted = true;
+      summary.querySelector('[data-reference]')!.textContent = `Referencia: ${pending.submissionId}`;
+      showSummary(pending.response);
+      announce('Tu respuesta se ha guardado correctamente.');
+    } catch {
+      formError.textContent = 'No hemos podido confirmar el guardado. Tus datos se mantienen. Pulsa «Reintentar envío» para comprobarlo sin duplicar la respuesta. No recargues la página.';
       formError.hidden = false;
+      submitButton.disabled = false;
+      submitButton.textContent = 'Reintentar envío';
+      submitButton.focus();
+    } finally {
+      sending = false;
+      form.removeAttribute('aria-busy');
     }
-  });
-
-  function editResponse(targetId = 'primary-name') {
-    summary.hidden = true;
-    form!.hidden = false;
-    const target = document.getElementById(targetId);
-    if (target instanceof HTMLInputElement && form!.contains(target)) target.focus();
-  }
-
-  section.querySelector('[data-edit]')!.addEventListener('click', () => editResponse());
-  summary.addEventListener('click', (event) => {
-    if (!(event.target instanceof Element)) return;
-    const button = event.target.closest<HTMLButtonElement>('[data-edit-person]');
-    if (button) editResponse(button.dataset.editPerson);
   });
 
   // Enable the interactive flow only after handlers are ready.
   form.noValidate = true;
-  reviewButton.disabled = false;
+  submitButton.disabled = false;
   syncConditionalFields();
 }

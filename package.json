@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "node --experimental-strip-types --test src/lib/rsvp.test.ts",
+    "test": "node --experimental-strip-types --test src/lib/rsvp.test.ts apps-script/Code.test.js",
     "test:e2e": "npm run build && playwright test",
     "dev": "astro dev",
     "build": "astro build",
