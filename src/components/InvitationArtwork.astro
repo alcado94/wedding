@@ -24,14 +24,17 @@
       // Hide each stroke along its own length, then reveal it like a pen moving on paper.
       strokes.forEach((stroke) => {
         const length = stroke.getTotalLength();
-        gsap.set(stroke, { strokeDasharray: length, strokeDashoffset: length });
+        gsap.set(stroke, { strokeDasharray: length, strokeDashoffset: length, visibility: 'hidden' });
       });
       gsap.set(accent, { fillOpacity: 0 });
 
       handwriting
+        .set(initials, { visibility: 'visible' })
         .to(initials, { strokeDashoffset: 0, duration: 3, ease: 'power1.inOut' })
-        .to(crossbar, { strokeDashoffset: 0, duration: 0.9, ease: 'power1.inOut' }, '+=0.12')
-        .to(accent, { strokeDashoffset: 0, duration: 0.35 }, '+=0.1')
+        .set(crossbar, { visibility: 'visible' }, '+=0.12')
+        .to(crossbar, { strokeDashoffset: 0, duration: 0.9, ease: 'power1.inOut' })
+        .set(accent, { visibility: 'visible' }, '+=0.1')
+        .to(accent, { strokeDashoffset: 0, duration: 0.35 })
         .to(accent, { fillOpacity: 1, duration: 0.2 });
     });
   });
